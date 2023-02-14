@@ -1,34 +1,40 @@
 import React, { useState } from "react";
 import TodoTable from './Todotable';
+import Button from '@mui/material/Button'
+import { Stack, TextField } from "@mui/material";
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
-
-
-
-
-interface Todo {
+interface Todo1 {
   desc: string;
-  date: string;
-  priority:string;
+  date: Date;
+  priority: string;
 }
 
 const Todolist = () => {
-  const [list, setList] = useState<Todo[]>([]);
+  const [list, setList] = useState<Todo1[]>([]);
 
-  const [todo, setTodo] = useState<Todo>({
+  const [todo, setTodo] = useState<Todo1>({
     desc: "",
-    date: "",
+    date: new Date(),
     priority: "",
   });
 
   const inputChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTodo({ ...todo, [e.target.name]: e.target.value });
+    if (e.target.name === "date") {
+      setTodo({
+        ...todo,
+        date: new Date(e.target.value),
+      });
+    } else {
+      setTodo({ ...todo, [e.target.name]: e.target.value });
+    }
   };
 
-  const addTodo: React.MouseEventHandler<HTMLButtonElement> = (e)=> {
+  const addTodo: React.MouseEventHandler<HTMLButtonElement> = (e) => {
     e.preventDefault();
-    setList([...list,{ ...todo, priority }]);
+    setList([...list, { ...todo, priority }]);
 
-    setTodo({ desc: "", date: "", priority: "low" });
+    setTodo({ desc: "", date: new Date(), priority: "low" });
     setPriority("low");
   };
 
@@ -44,7 +50,6 @@ const Todolist = () => {
   return (
     <div>
       <div>
-        <h2>add todos</h2>
         <br />
         <br />
         <label>
@@ -56,15 +61,17 @@ const Todolist = () => {
             name="desc"
           />
         </label>
-        <label>
-          Date:
-          <input
-            type="date"
-            onChange={inputChanged}
-            value={todo.date}
-            name="date"
-          />
-        </label>
+        <DatePicker
+          label="Date"
+          value={todo.date}
+          onChange={(newDate) =>
+            setTodo({
+              ...todo,
+              date: newDate ?? new Date(),
+            })    
+          }
+          renderInput={(params) => <TextField {...params} />}
+        />
         <label>
           Priority:
           <select value={priority} onChange={priorityChanged}>
@@ -73,12 +80,12 @@ const Todolist = () => {
             <option value="High">High</option>
           </select>
         </label>
-
-
-        <button onClick={addTodo}>add</button>
+        <Button onClick={addTodo} style={{ marginLeft: "5px" }} variant="contained">
+          add
+        </Button>
       </div>
 
-      <TodoTable list={list} deleteTodo={deleteTodo} />
+      <TodoTable list={list}  deleteTodo={deleteTodo} />
     </div>
   );
 };

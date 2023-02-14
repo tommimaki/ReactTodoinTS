@@ -2,12 +2,14 @@ import React,{useState} from 'react';
 import {AgGridReact} from 'ag-grid-react'
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-material.css';
+import Button from '@mui/material/Button'
+import { ValueFormatterParams } from 'ag-grid-community';
 
 
 
 interface Todo {
   desc: string;
-  date: string;
+  date: Date;
   priority: string;
 }
 
@@ -31,7 +33,13 @@ const TodoTable: React.FC<Props> = ({ list, deleteTodo }) => {
               filter: true,
               browserDatePicker: true,
               floatingFilter: true,
-              sortable:true
+              sortable:true,
+              valueFormatter: (params: ValueFormatterParams) =>
+              params.data.date.toLocaleDateString("en-GB", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+              }),
             },
             {
               field: "priority",
@@ -42,7 +50,7 @@ const TodoTable: React.FC<Props> = ({ list, deleteTodo }) => {
             },
             {
               cellRendererFramework: (params: any) => (
-                <button onClick={() => deleteTodo(params.node.rowIndex)}>Delete</button>
+                <Button variant='text' style={{color:'red'}} onClick={() => deleteTodo(params.node.rowIndex)}>Delete</Button>
               ),
               width: 100,
             },
